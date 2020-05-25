@@ -1,5 +1,5 @@
 /**
- * Dark Reader v4.9.8
+ * Dark Reader v4.9.10
  * https://darkreader.org/
  */
 
@@ -497,7 +497,7 @@
     function replaceCSSFontFace($css) {
         return $css.replace(fontFaceRegex, '');
     }
-    var varRegex = /var\((--[^\s,]+),?\s*([^\(\)]*(\([^\(\)]*\)[^\(\)]*)*\s*)\)/g;
+    var varRegex = /var\((--[^\s,\(\)]+),?\s*([^\(\)]*(\([^\(\)]*\)[^\(\)]*)*\s*)\)/g;
     function replaceCSSVariables(value, variables) {
         var missing = false;
         var result = value.replace(varRegex, function (match, name, fallback) {
@@ -3280,7 +3280,8 @@
                 push(inlineStyleElements, elements);
             }
         });
-        inlineStyleElements.forEach(function (el) { return overrideInlineStyle(el, filter, fixes.ignoreInlineStyle); });
+        var ignoredSelectors = fixes && Array.isArray(fixes.ignoreInlineStyle) ? fixes.ignoreInlineStyle : [];
+        inlineStyleElements.forEach(function (el) { return overrideInlineStyle(el, filter, ignoredSelectors); });
     }
     var loadingStylesCounter = 0;
     var loadingStyles = new Set();
@@ -3409,8 +3410,9 @@
             newManagers.forEach(function (manager) { return manager.watch(); });
             stylesToRestore.forEach(function (style) { return styleManagers.get(style).restore(); });
         });
+        var ignoredSelectors = fixes && Array.isArray(fixes.ignoreInlineStyle) ? fixes.ignoreInlineStyle : [];
         watchForInlineStyles(function (element) {
-            overrideInlineStyle(element, filter, fixes.ignoreInlineStyle);
+            overrideInlineStyle(element, filter, ignoredSelectors);
             if (element === document.documentElement) {
                 var rootVariables = getElementCSSVariables(document.documentElement);
                 if (rootVariables.size > 0) {
@@ -3422,7 +3424,7 @@
             var inlineStyleElements = root.querySelectorAll(INLINE_STYLE_SELECTOR);
             if (inlineStyleElements.length > 0) {
                 createShadowStaticStyleOverrides(root);
-                forEach(inlineStyleElements, function (el) { return overrideInlineStyle(el, filter, fixes.ignoreInlineStyle); });
+                forEach(inlineStyleElements, function (el) { return overrideInlineStyle(el, filter, ignoredSelectors); });
             }
         });
         addDOMReadyListener(onDOMReady);
