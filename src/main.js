@@ -1,6 +1,3 @@
-(function () {
-    'use strict'
-
 let audio = new Audio();
 audio.src = 'cynamatics.mp3';
 audio.loop = true;
@@ -8,22 +5,23 @@ audio.autoplay = true;
 audio.crossOrigin = "anonymous";
 
 // Define variables for analyser
-let audioContext, analyser, source, fbc_array, data, len, total;
+var audioContext, analyser, source, fbc_array, data, len, total;
 
 // Define Audio Analyser Helpers
 function createAudioContext() {
     audioContext = new (window.AudioContext || window.webkitAudioContext);
     analyser = audioContext.createAnalyser();
-    analyser.fftSize = 1024;
+    analyser.fftSize = 1024; // change this to more or less triangles
     len = analyser.fftSize / 16;
     source = audioContext.createMediaElementSource(audio);
     source.connect(analyser);
     analyser.connect(audioContext.destination);
 }
 
+// Define main variables for canvas start
+var canvas, canvasCtx;
 
-let canvas, canvasCtx;
-
+// Define Canvas helpers
 function createCanvas() {
     canvas = document.getElementById('analyser');
     canvasCtx = canvas.getContext('2d');
@@ -31,11 +29,13 @@ function createCanvas() {
 
 function defineSizesCanvas() {
     canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    canvas.height = window.innerHeight - 50;
 }
 
-let i,
+// Define math info for draw
+var i,
     cx, cy,
+    r = 50,
     beginAngle = 0,
     angle,
     twoPI = 2 * Math.PI,
@@ -44,9 +44,8 @@ let i,
 
 // Create the animation
 function frameLooper() {
-    requestAnimationFrame(frameLooper);
+    window.requestAnimationFrame(frameLooper);
     fbc_array = new Uint8Array(analyser.frequencyBinCount);
-
     canvasCtx.save();
     analyser.getByteFrequencyData(fbc_array);
     data = fbc_array;
@@ -80,6 +79,26 @@ function init() {
     frameLooper();
 }
 
+let isPlaying = false;
+function togglePlay() {
+    if (isPlaying) {
+        audio.pause();
+        document.querySelector('.button').textContent = 'Play'; 
+    } else {
+        audio.play();
+        document.querySelector('.button').textContent = 'Pause'; 
+    }
+}
+
+audio.onplaying = function() {
+    isPlaying = true;
+    document.querySelector('.button').textContent = 'Pause'; 
+}
+
+audio.onpause = function() {
+    isPlaying = false;
+    document.querySelector('.button').textContent = 'Play'; 
+}
+
 window.addEventListener('load', init, false);
 window.addEventListener('resize', defineSizesCanvas, false);
-})
