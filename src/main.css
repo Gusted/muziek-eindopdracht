@@ -13,6 +13,11 @@ canvas {
     background: radial-gradient(ellipse at center, rgba(76,76,26,1) 0%,rgb(27, 47, 14) 0%,rgba(0,0,0,1) 100%);
 }
 
+.button:hover {
+    background-color: #193945;
+    transition: background-color 125ms;
+}
+
 .button {
     background-color: #141e24;
     border: 0.125rem solid #316e7d;
