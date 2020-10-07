@@ -1,15 +1,15 @@
-let audio = new Audio();
+const audio = new Audio();
 audio.src = 'cynamatics.mp3';
 audio.loop = true;
 audio.autoplay = true;
 audio.crossOrigin = "anonymous";
 
 // Define variables for analyser
-var audioContext, analyser, source, fbc_array, data, len, total;
+let audioContext, analyser, source, fbc_array, data, len, total;
 
 // Define Audio Analyser Helpers
 function createAudioContext() {
-    audioContext = new (window.AudioContext || window.webkitAudioContext);
+    audioContext = new window.AudioContext();
     analyser = audioContext.createAnalyser();
     analyser.fftSize = 1024; // change this to more or less triangles
     len = analyser.fftSize / 16;
@@ -19,7 +19,7 @@ function createAudioContext() {
 }
 
 // Define main variables for canvas start
-var canvas, canvasCtx;
+let canvas, canvasCtx;
 
 // Define Canvas helpers
 function createCanvas() {
@@ -33,9 +33,8 @@ function defineSizesCanvas() {
 }
 
 // Define math info for draw
-var i,
+let i,
     cx, cy,
-    r = 50,
     beginAngle = 0,
     angle,
     twoPI = 2 * Math.PI,
@@ -80,15 +79,6 @@ function init() {
 }
 
 let isPlaying = false;
-function togglePlay() {
-    if (isPlaying) {
-        audio.pause();
-        document.querySelector('.button').textContent = 'Play'; 
-    } else {
-        audio.play();
-        document.querySelector('.button').textContent = 'Pause'; 
-    }
-}
 
 audio.onplaying = function() {
     isPlaying = true;
